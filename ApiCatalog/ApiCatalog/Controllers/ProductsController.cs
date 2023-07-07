@@ -20,63 +20,98 @@ namespace ApiCatalog.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Product>> Get()
         {
-            var products = _context.Products.ToList();
+            try
+            {
+                var products = _context.Products.AsNoTracking().ToList();
 
-            if (products is null)
-                return NotFound("Products Not Found");
+                if (products is null)
+                    return NotFound("Products Not Found");
 
-            return products;
+                return products;
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "A problem ocurred trying to process your request");
+            }
         }
 
         [HttpGet("{id:int}", Name="GetProduct")]
         public ActionResult<Product> Get(int id)
         {
-            var product = _context.Products.FirstOrDefault(p => p.ProductId == id);
+            try
+            {
+                var product = _context.Products.FirstOrDefault(p => p.ProductId == id);
 
-            if(product is null)
-                return NotFound("Product Not Found");
-            
-            return product;
+                if (product is null)
+                    return NotFound($"Product with id= {id} Not Found");
+
+                return product;
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "A problem ocurred trying to process your request");
+            }
         }
 
         [HttpPost]
         public ActionResult Post(Product product)
         {
-            if (product is null)
+            try
             {
-                return BadRequest();
-            }
-            _context.Products.Add(product);
-            _context.SaveChanges();
+                if (product is null)
+                {
+                    return BadRequest("Invalid Data");
+                }
+                _context.Products.Add(product);
+                _context.SaveChanges();
 
-            return new CreatedAtRouteResult("GetProduct",
-                    new { id = product.ProductId, product });
+                return new CreatedAtRouteResult("GetProduct",
+                        new { id = product.ProductId, product });
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "A problem ocurred trying to process your request");
+            }
         }
 
         [HttpPut("{id:int}")]
         public ActionResult Put(int id, Product product)
         {
-            if (id != product.ProductId)
-                return BadRequest();
+            try
+            {
+                if (id != product.ProductId)
+                    return BadRequest("Invalid Data");
 
-            _context.Entry(product).State = EntityState.Modified;
-            _context.SaveChanges();
+                _context.Entry(product).State = EntityState.Modified;
+                _context.SaveChanges();
 
-            return Ok(product);
+                return Ok(product);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "A problem ocurred trying to process your request");
+            }
         }
 
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
-            var product = _context.Products.FirstOrDefault(p => p.ProductId == id);
+            try
+            {
+                var product = _context.Products.FirstOrDefault(p => p.ProductId == id);
 
-            if (product is null)
-                return NotFound("Product Not Found...");
+                if (product is null)
+                    return NotFound($"Product with id= {id} Not Found...");
 
-            _context.Products.Remove(product);
-            _context.SaveChanges();
+                _context.Products.Remove(product);
+                _context.SaveChanges();
 
-            return Ok(product);
+                return Ok(product);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "A problem ocurred trying to process your request");
+            }
         }
     }
 }
