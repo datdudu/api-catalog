@@ -1,4 +1,5 @@
 using ApiCatalog.Context;
+using ApiCatalog.Repository;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -17,6 +18,7 @@ builder.Services.AddSwaggerGen();
 
 string mySqlConnection = builder.Configuration.GetConnectionString("DefaultConnection");
 
+builder.Services.AddScoped<IUnityOfWork, UnitOfWork>();
 builder.Services.AddDbContext<ApiCatalogContext>(options=>
         options.UseMySql(mySqlConnection,
             ServerVersion.AutoDetect(mySqlConnection)));
