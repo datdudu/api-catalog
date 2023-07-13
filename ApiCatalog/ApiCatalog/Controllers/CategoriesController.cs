@@ -1,9 +1,6 @@
-﻿using ApiCatalog.Context;
-using ApiCatalog.Models;
+﻿using ApiCatalog.Models;
 using ApiCatalog.Repository;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ApiCatalog.Controllers
 {
