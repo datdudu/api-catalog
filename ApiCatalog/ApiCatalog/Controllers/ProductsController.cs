@@ -1,8 +1,6 @@
-﻿using ApiCatalog.Context;
-using ApiCatalog.Models;
-using Microsoft.AspNetCore.Http;
+﻿using ApiCatalog.Models;
+using ApiCatalog.Repository;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ApiCatalog.Controllers
 {
@@ -10,11 +8,17 @@ namespace ApiCatalog.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly ApiCatalogContext _context;
+        private readonly IUnityOfWork _context;
 
-        public ProductsController(ApiCatalogContext context)
+        public ProductsController(IUnityOfWork context)
         {
             _context = context;
+        }
+
+        [HttpGet("lowerprice")]
+        public ActionResult<IEnumerable<Product>> GetProductByPrice()
+        {
+            return _context.ProductRepository.GetProductsByPrice().ToList();
         }
 
         [HttpGet]
@@ -22,7 +26,7 @@ namespace ApiCatalog.Controllers
         {
             try
             {
-                var products = _context.Products.AsNoTracking().ToList();
+                var products = _context.ProductRepository.Get().ToList();
 
                 if (products is null)
                     return NotFound("Products Not Found");
@@ -40,7 +44,7 @@ namespace ApiCatalog.Controllers
         {
             try
             {
-                var product = _context.Products.FirstOrDefault(p => p.ProductId == id);
+                var product = _context.ProductRepository.GetById(p => p.ProductId == id);
 
                 if (product is null)
                     return NotFound($"Product with id= {id} Not Found");
@@ -62,8 +66,8 @@ namespace ApiCatalog.Controllers
                 {
                     return BadRequest("Invalid Data");
                 }
-                _context.Products.Add(product);
-                _context.SaveChanges();
+                _context.ProductRepository.Add(product);
+                _context.Commit();
 
                 return new CreatedAtRouteResult("GetProduct",
                         new { id = product.ProductId, product });
@@ -82,8 +86,8 @@ namespace ApiCatalog.Controllers
                 if (id != product.ProductId)
                     return BadRequest("Invalid Data");
 
-                _context.Entry(product).State = EntityState.Modified;
-                _context.SaveChanges();
+                _context.ProductRepository.Update(product);
+                _context.Commit();
 
                 return Ok(product);
             }
@@ -98,13 +102,13 @@ namespace ApiCatalog.Controllers
         {
             try
             {
-                var product = _context.Products.FirstOrDefault(p => p.ProductId == id);
+                var product = _context.ProductRepository.GetById(p => p.ProductId == id);
 
                 if (product is null)
                     return NotFound($"Product with id= {id} Not Found...");
 
-                _context.Products.Remove(product);
-                _context.SaveChanges();
+                _context.ProductRepository.Delete(product);
+                _context.Commit();
 
                 return Ok(product);
             }
