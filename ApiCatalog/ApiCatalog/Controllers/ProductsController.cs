@@ -1,5 +1,7 @@
-﻿using ApiCatalog.Models;
+﻿using ApiCatalog.DTOs;
+using ApiCatalog.Models;
 using ApiCatalog.Repository;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiCatalog.Controllers
@@ -9,20 +11,25 @@ namespace ApiCatalog.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IUnityOfWork _context;
+        private readonly IMapper _mapper;
 
-        public ProductsController(IUnityOfWork context)
+        public ProductsController(IUnityOfWork context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         [HttpGet("lowerprice")]
-        public ActionResult<IEnumerable<Product>> GetProductByPrice()
+        public ActionResult<IEnumerable<ProductDTO>> GetProductByPrice()
         {
-            return _context.ProductRepository.GetProductsByPrice().ToList();
+            var products = _context.ProductRepository.GetProductsByPrice().ToList();
+            var productsDTO = _mapper.Map<List<ProductDTO>>(products);
+
+            return productsDTO;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Product>> Get()
+        public ActionResult<IEnumerable<ProductDTO>> Get()
         {
             try
             {
@@ -31,7 +38,9 @@ namespace ApiCatalog.Controllers
                 if (products is null)
                     return NotFound("Products Not Found");
 
-                return products;
+                var productsDTO = _mapper.Map<List<ProductDTO>>(products);
+
+                return productsDTO;
             }
             catch (Exception)
             {
@@ -40,7 +49,7 @@ namespace ApiCatalog.Controllers
         }
 
         [HttpGet("{id:int}", Name="GetProduct")]
-        public ActionResult<Product> Get(int id)
+        public ActionResult<ProductDTO> Get(int id)
         {
             try
             {
@@ -49,7 +58,9 @@ namespace ApiCatalog.Controllers
                 if (product is null)
                     return NotFound($"Product with id= {id} Not Found");
 
-                return product;
+                var productDTO = _mapper.Map<ProductDTO>(product);
+
+                return productDTO;
             }
             catch (Exception)
             {
@@ -58,10 +69,12 @@ namespace ApiCatalog.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post(Product product)
+        public ActionResult Post([FromBody] ProductDTO productDTO)
         {
             try
             {
+                var product = _mapper.Map<Product>(productDTO);
+
                 if (product is null)
                 {
                     return BadRequest("Invalid Data");
@@ -69,8 +82,10 @@ namespace ApiCatalog.Controllers
                 _context.ProductRepository.Add(product);
                 _context.Commit();
 
+                var productDto = _mapper.Map<ProductDTO>(product);
+
                 return new CreatedAtRouteResult("GetProduct",
-                        new { id = product.ProductId, product });
+                        new { id = productDto.ProductId, productDto });
             }
             catch (Exception)
             {
@@ -79,12 +94,14 @@ namespace ApiCatalog.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public ActionResult Put(int id, Product product)
+        public ActionResult Put(int id, ProductDTO productDTO)
         {
             try
             {
-                if (id != product.ProductId)
+                if (id != productDTO.ProductId)
                     return BadRequest("Invalid Data");
+
+                var product = _mapper.Map<Product>(productDTO);
 
                 _context.ProductRepository.Update(product);
                 _context.Commit();
@@ -98,7 +115,7 @@ namespace ApiCatalog.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        public ActionResult Delete(int id)
+        public ActionResult<ProductDTO> Delete(int id)
         {
             try
             {
@@ -110,7 +127,9 @@ namespace ApiCatalog.Controllers
                 _context.ProductRepository.Delete(product);
                 _context.Commit();
 
-                return Ok(product);
+                var productDTO = _mapper.Map<ProductDTO>(product);
+
+                return Ok(productDTO);
             }
             catch (Exception)
             {

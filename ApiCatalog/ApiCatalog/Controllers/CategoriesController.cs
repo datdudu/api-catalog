@@ -1,5 +1,7 @@
-﻿using ApiCatalog.Models;
+﻿using ApiCatalog.DTOs;
+using ApiCatalog.Models;
 using ApiCatalog.Repository;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiCatalog.Controllers
@@ -9,25 +11,33 @@ namespace ApiCatalog.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly IUnityOfWork _context;
+        private readonly IMapper _mapper;
 
-        public CategoriesController(IUnityOfWork context)
+        public CategoriesController(IUnityOfWork context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         [HttpGet("Products")]
-        public ActionResult<IEnumerable<Category>> GetCategoriesProducts()
+        public ActionResult<IEnumerable<CategoryDTO>> GetCategoriesProducts()
         {
-            return _context.CategoryRepository.GetCategoriesProducts().ToList();
+            var category = _context.CategoryRepository.GetCategoriesProducts().ToList();
+            var categoryDTO = _mapper.Map<List<CategoryDTO>>(category);
+
+            return categoryDTO;
         }
 
 
         [HttpGet]
-        public ActionResult<IEnumerable<Category>> Get()
+        public ActionResult<IEnumerable<CategoryDTO>> Get()
         {
             try
             {
-                return _context.CategoryRepository.Get().ToList();
+                var category = _context.CategoryRepository.Get().ToList();
+                var categoryDTO = _mapper.Map<List<CategoryDTO>>(category);
+
+                return categoryDTO;
             }
             catch (Exception)
             {
@@ -36,7 +46,7 @@ namespace ApiCatalog.Controllers
         }
 
         [HttpGet("{id:int}", Name = "GetCategory")]
-        public ActionResult<Category> Get(int id)
+        public ActionResult<CategoryDTO> Get(int id)
         {
             try
             {
@@ -47,6 +57,8 @@ namespace ApiCatalog.Controllers
                     return NotFound($"Category with id= {id} Not Found");
                 }
 
+                var categoryDTO = _mapper.Map<CategoryDTO>(category);
+
                 return Ok(category);
             }
             catch (Exception)
@@ -56,18 +68,22 @@ namespace ApiCatalog.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post(Category category) 
+        public ActionResult Post(CategoryDTO categoryDTO) 
         {
             try
             {
+                var category = _mapper.Map<Category>(categoryDTO);
+
                 if (category is null)
                     return BadRequest("Invalid Data");
 
                 _context.CategoryRepository.Add(category);
                 _context.Commit();
 
+                var categoryDto = _mapper.Map<CategoryDTO>(category);
+
                 return new CreatedAtRouteResult("GetCategory",
-                    new { id = category.CategoryId }, category);
+                    new { id = categoryDto.CategoryId }, categoryDto);
             }
             catch (Exception)
             {
@@ -76,12 +92,14 @@ namespace ApiCatalog.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult Put(int id, Category category) 
+        public ActionResult Put(int id, CategoryDTO categoryDTO) 
         {
             try
             {
-                if (id != category.CategoryId)
+                if (id != categoryDTO.CategoryId)
                     return BadRequest("Invalid Data");
+
+                var category = _mapper.Map<Category>(categoryDTO);
 
                 _context.CategoryRepository.Update(category);
                 _context.Commit();
@@ -95,7 +113,7 @@ namespace ApiCatalog.Controllers
         }
 
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id) 
+        public ActionResult<CategoryDTO> Delete(int id) 
         {
             try
             {
@@ -107,7 +125,9 @@ namespace ApiCatalog.Controllers
                 _context.CategoryRepository.Delete(category);
                 _context.Commit();
 
-                return Ok(category);
+                var categoryDTO = _mapper.Map<CategoryDTO>(category);
+
+                return Ok(categoryDTO);
             }
             catch (Exception)
             {

@@ -52,3 +52,5 @@ C:\Users\Carlos Eduardo\Desktop\.NET Macoratti Projects\ApiCatalog\api-catalog\A
 C:\Users\Carlos Eduardo\Desktop\.NET Macoratti Projects\ApiCatalog\api-catalog\ApiCatalog\ApiCatalog\obj\Debug\net6.0\ApiCatalog.pdb
 C:\Users\Carlos Eduardo\Desktop\.NET Macoratti Projects\ApiCatalog\api-catalog\ApiCatalog\ApiCatalog\obj\Debug\net6.0\ApiCatalog.genruntimeconfig.cache
 C:\Users\Carlos Eduardo\Desktop\.NET Macoratti Projects\ApiCatalog\api-catalog\ApiCatalog\ApiCatalog\obj\Debug\net6.0\ref\ApiCatalog.dll
+C:\Users\Carlos Eduardo\Desktop\.NET Macoratti Projects\ApiCatalog\api-catalog\ApiCatalog\ApiCatalog\bin\Debug\net6.0\AutoMapper.dll
+C:\Users\Carlos Eduardo\Desktop\.NET Macoratti Projects\ApiCatalog\api-catalog\ApiCatalog\ApiCatalog\bin\Debug\net6.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
