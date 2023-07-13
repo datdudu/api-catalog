@@ -78,7 +78,7 @@ namespace ApiCatalog.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         public ActionResult Put(int id, Category category) 
         {
             try
@@ -97,7 +97,7 @@ namespace ApiCatalog.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public ActionResult Delete(int id) 
         {
             try
