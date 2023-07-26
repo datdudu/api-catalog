@@ -4,6 +4,7 @@ using ApiCatalog.Pagination;
 using ApiCatalog.Repository;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace ApiCatalog.Controllers
 {
@@ -34,11 +35,22 @@ namespace ApiCatalog.Controllers
         {
             try
             {
-                var products = _context.ProductRepository.GetProducts(productsParameters).ToList();
+                var products = _context.ProductRepository.GetProducts(productsParameters);
 
                 if (products is null)
                     return NotFound("Products Not Found");
 
+                var metadata = new
+                {
+                    products.TotalCount,
+                    products.PageSize,
+                    products.CurrentPage,
+                    products.TotalPages,
+                    products.HasNext,
+                    products.HasPrevious
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 var productsDTO = _mapper.Map<List<ProductDTO>>(products);
 
                 return productsDTO;

@@ -1,8 +1,10 @@
 ﻿using ApiCatalog.DTOs;
 using ApiCatalog.Models;
+using ApiCatalog.Pagination;
 using ApiCatalog.Repository;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace ApiCatalog.Controllers
 {
@@ -30,12 +32,26 @@ namespace ApiCatalog.Controllers
 
 
         [HttpGet]
-        public ActionResult<IEnumerable<CategoryDTO>> Get()
+        public ActionResult<IEnumerable<CategoryDTO>> Get([FromQuery] CategoriesParameters categoriesParameters)
         {
             try
             {
-                var category = _context.CategoryRepository.Get().ToList();
-                var categoryDTO = _mapper.Map<List<CategoryDTO>>(category);
+                var categories = _context.CategoryRepository.GetCategories(categoriesParameters);
+
+
+                var metadata = new
+                {
+                    categories.TotalCount,
+                    categories.PageSize,
+                    categories.CurrentPage,
+                    categories.TotalPages,
+                    categories.HasNext,
+                    categories.HasPrevious
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                var categoryDTO = _mapper.Map<List<CategoryDTO>>(categories);
 
                 return categoryDTO;
             }
