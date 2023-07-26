@@ -1,5 +1,6 @@
 ﻿using ApiCatalog.DTOs;
 using ApiCatalog.Models;
+using ApiCatalog.Pagination;
 using ApiCatalog.Repository;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -29,11 +30,11 @@ namespace ApiCatalog.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<ProductDTO>> Get()
+        public ActionResult<IEnumerable<ProductDTO>> Get([FromQuery] ProductsParameters productsParameters)
         {
             try
             {
-                var products = _context.ProductRepository.Get().ToList();
+                var products = _context.ProductRepository.GetProducts(productsParameters).ToList();
 
                 if (products is null)
                     return NotFound("Products Not Found");
