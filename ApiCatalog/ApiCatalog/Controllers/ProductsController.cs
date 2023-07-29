@@ -3,6 +3,9 @@ using ApiCatalog.Models;
 using ApiCatalog.Pagination;
 using ApiCatalog.Repository;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -10,6 +13,8 @@ namespace ApiCatalog.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [EnableCors("AllowApiRequest")]
     public class ProductsController : ControllerBase
     {
         private readonly IUnityOfWork _context;
@@ -22,20 +27,20 @@ namespace ApiCatalog.Controllers
         }
 
         [HttpGet("lowerprice")]
-        public ActionResult<IEnumerable<ProductDTO>> GetProductByPrice()
+        public async Task<ActionResult<IEnumerable<ProductDTO>>> GetProductByPrice()
         {
-            var products = _context.ProductRepository.GetProductsByPrice().ToList();
+            var products = await _context.ProductRepository.GetProductsByPrice();
             var productsDTO = _mapper.Map<List<ProductDTO>>(products);
 
             return productsDTO;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<ProductDTO>> Get([FromQuery] ProductsParameters productsParameters)
+        public async Task<ActionResult<IEnumerable<ProductDTO>>> Get([FromQuery] ProductsParameters productsParameters)
         {
             try
             {
-                var products = _context.ProductRepository.GetProducts(productsParameters);
+                var products = await _context.ProductRepository.GetProducts(productsParameters);
 
                 if (products is null)
                     return NotFound("Products Not Found");
@@ -62,11 +67,11 @@ namespace ApiCatalog.Controllers
         }
 
         [HttpGet("{id:int}", Name="GetProduct")]
-        public ActionResult<ProductDTO> Get(int id)
+        public async Task<ActionResult<ProductDTO>> Get(int id)
         {
             try
             {
-                var product = _context.ProductRepository.GetById(p => p.ProductId == id);
+                var product = await _context.ProductRepository.GetById(p => p.ProductId == id);
 
                 if (product is null)
                     return NotFound($"Product with id= {id} Not Found");
@@ -82,7 +87,7 @@ namespace ApiCatalog.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody] ProductDTO productDTO)
+        public async Task<ActionResult> Post([FromBody] ProductDTO productDTO)
         {
             try
             {
@@ -93,7 +98,7 @@ namespace ApiCatalog.Controllers
                     return BadRequest("Invalid Data");
                 }
                 _context.ProductRepository.Add(product);
-                _context.Commit();
+                await _context.Commit();
 
                 var productDto = _mapper.Map<ProductDTO>(product);
 
@@ -107,7 +112,7 @@ namespace ApiCatalog.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public ActionResult Put(int id, ProductDTO productDTO)
+        public async Task<ActionResult> Put(int id, ProductDTO productDTO)
         {
             try
             {
@@ -117,7 +122,7 @@ namespace ApiCatalog.Controllers
                 var product = _mapper.Map<Product>(productDTO);
 
                 _context.ProductRepository.Update(product);
-                _context.Commit();
+                await _context.Commit();
 
                 return Ok(product);
             }
@@ -128,17 +133,17 @@ namespace ApiCatalog.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        public ActionResult<ProductDTO> Delete(int id)
+        public async Task<ActionResult<ProductDTO>> Delete(int id)
         {
             try
             {
-                var product = _context.ProductRepository.GetById(p => p.ProductId == id);
+                var product = await _context.ProductRepository.GetById(p => p.ProductId == id);
 
                 if (product is null)
                     return NotFound($"Product with id= {id} Not Found...");
 
                 _context.ProductRepository.Delete(product);
-                _context.Commit();
+                await _context.Commit();
 
                 var productDTO = _mapper.Map<ProductDTO>(product);
 

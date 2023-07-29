@@ -3,6 +3,9 @@ using ApiCatalog.Models;
 using ApiCatalog.Pagination;
 using ApiCatalog.Repository;
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -10,6 +13,8 @@ namespace ApiCatalog.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [EnableCors("AllowApiRequest")]
     public class CategoriesController : ControllerBase
     {
         private readonly IUnityOfWork _context;
@@ -22,9 +27,9 @@ namespace ApiCatalog.Controllers
         }
 
         [HttpGet("Products")]
-        public ActionResult<IEnumerable<CategoryDTO>> GetCategoriesProducts()
+        public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetCategoriesProducts()
         {
-            var category = _context.CategoryRepository.GetCategoriesProducts().ToList();
+            var category = await _context.CategoryRepository.GetCategoriesProducts();
             var categoryDTO = _mapper.Map<List<CategoryDTO>>(category);
 
             return categoryDTO;
@@ -32,11 +37,11 @@ namespace ApiCatalog.Controllers
 
 
         [HttpGet]
-        public ActionResult<IEnumerable<CategoryDTO>> Get([FromQuery] CategoriesParameters categoriesParameters)
+        public async Task<ActionResult<IEnumerable<CategoryDTO>>> Get([FromQuery] CategoriesParameters categoriesParameters)
         {
             try
             {
-                var categories = _context.CategoryRepository.GetCategories(categoriesParameters);
+                var categories = await _context.CategoryRepository.GetCategories(categoriesParameters);
 
 
                 var metadata = new
@@ -62,11 +67,11 @@ namespace ApiCatalog.Controllers
         }
 
         [HttpGet("{id:int}", Name = "GetCategory")]
-        public ActionResult<CategoryDTO> Get(int id)
+        public async Task<ActionResult<CategoryDTO>> Get(int id)
         {
             try
             {
-                var category = _context.CategoryRepository.GetById(c => c.CategoryId == id);
+                var category = await _context.CategoryRepository.GetById(c => c.CategoryId == id);
 
                 if (category == null)
                 {
@@ -84,7 +89,7 @@ namespace ApiCatalog.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post(CategoryDTO categoryDTO) 
+        public async Task<ActionResult> Post(CategoryDTO categoryDTO) 
         {
             try
             {
@@ -94,7 +99,7 @@ namespace ApiCatalog.Controllers
                     return BadRequest("Invalid Data");
 
                 _context.CategoryRepository.Add(category);
-                _context.Commit();
+                await _context.Commit();
 
                 var categoryDto = _mapper.Map<CategoryDTO>(category);
 
@@ -108,7 +113,7 @@ namespace ApiCatalog.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult Put(int id, CategoryDTO categoryDTO) 
+        public async  Task<ActionResult> Put(int id, CategoryDTO categoryDTO) 
         {
             try
             {
@@ -118,7 +123,7 @@ namespace ApiCatalog.Controllers
                 var category = _mapper.Map<Category>(categoryDTO);
 
                 _context.CategoryRepository.Update(category);
-                _context.Commit();
+                await _context.Commit();
 
                 return Ok(category);
             }
@@ -129,17 +134,17 @@ namespace ApiCatalog.Controllers
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<CategoryDTO> Delete(int id) 
+        public async Task<ActionResult<CategoryDTO>> Delete(int id) 
         {
             try
             {
-                var category = _context.CategoryRepository.GetById(c => c.CategoryId == id);
+                var category = await _context.CategoryRepository.GetById(c => c.CategoryId == id);
 
                 if (category == null)
                     return NotFound($"Category wth id= {id} Not Found");
 
                 _context.CategoryRepository.Delete(category);
-                _context.Commit();
+                await _context.Commit();
 
                 var categoryDTO = _mapper.Map<CategoryDTO>(category);
 

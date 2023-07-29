@@ -12,14 +12,14 @@ namespace ApiCatalog.Repository
         {
         }
 
-        public PagedList<Category> GetCategories(CategoriesParameters categoriesParameters)
+        public async Task<PagedList<Category>> GetCategories(CategoriesParameters categoriesParameters)
         {
-            return PagedList<Category>.ToPagedList(Get().OrderBy(on => on.CategoryId), categoriesParameters.PageNumber, categoriesParameters.PageSize);
+            return await PagedList<Category>.ToPagedList(Get().OrderBy(on => on.CategoryId), categoriesParameters.PageNumber, categoriesParameters.PageSize);
         }
 
-        public IEnumerable<Category> GetCategoriesProducts()
+        public async Task<IEnumerable<Category>> GetCategoriesProducts()
         {
-            return Get().Include(c => c.Products);
+            return await Get().Include(c => c.Products).ToListAsync();
         }
     }
 }

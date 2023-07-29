@@ -1,9 +1,10 @@
 ﻿using ApiCatalog.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApiCatalog.Context
 {
-    public class ApiCatalogContext : DbContext
+    public class ApiCatalogContext : IdentityDbContext
     {
         public ApiCatalogContext(DbContextOptions<ApiCatalogContext> options) : base(options) 
         { 
