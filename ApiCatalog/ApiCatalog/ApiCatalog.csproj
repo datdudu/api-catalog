@@ -8,8 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Controllers\TesteV1Controller.cs" />
-    <Compile Remove="Controllers\TesteV2Controller.cs" />
   </ItemGroup>
 
   <ItemGroup>
