@@ -2,22 +2,22 @@ using ApiCatalog.Context;
 using ApiCatalog.DTOs.Mappings;
 using ApiCatalog.Repository;
 using AutoMapper;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Microsoft.OpenApi.Models;
-using Microsoft.Extensions.DependencyInjection;
+using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers()
-    .AddJsonOptions(options => 
+    .AddJsonOptions(options =>
         options.JsonSerializerOptions.
             ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
@@ -73,9 +73,9 @@ builder.Services.AddSingleton(mapper);
 //        );
 //});
 
-builder.services.addcors();
+builder.Services.AddCors();
 builder.Services.AddScoped<IUnityOfWork, UnitOfWork>();
-builder.Services.AddDbContext<ApiCatalogContext>(options=>
+builder.Services.AddDbContext<ApiCatalogContext>(options =>
         options.UseMySql(mySqlConnection,
             ServerVersion.AutoDetect(mySqlConnection)));
 
@@ -98,6 +98,13 @@ builder.Services.AddAuthentication(
             Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     });
 
+//builder.Services.AddApiVersioning(options =>
+//{
+//    options.AssumeDefaultVersionWhenUnspecified = true;
+//    options.DefaultApiVersion = new ApiVersion(1, 0);
+//    options.ReportApiVersions = true;
+//    options.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
+//});
 
 var app = builder.Build();
 

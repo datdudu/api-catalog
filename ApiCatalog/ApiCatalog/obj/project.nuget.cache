@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "8mLX2NmCR0ZRD5XeJR6wExP6dtmNewjJVN9ml0YCpqqNVPFRlZzcVKxb+iKrbguueSXmtUHyfuNBtBApr17LHg==",
+  "dgSpecHash": "HKjBuKTYSwfu7j14vhDfnQkpQrDoJEqd6qwHuVDQhDv/ANScxGa8PQpszh+GvANT25MuC1+U0JHlp+zfU5Q0Uw==",
   "success": true,
   "projectFilePath": "C:\\Users\\Carlos Eduardo\\Desktop\\.NET Macoratti Projects\\ApiCatalog\\api-catalog\\ApiCatalog\\ApiCatalog\\ApiCatalog.csproj",
   "expectedPackageFiles": [
@@ -11,6 +11,7 @@
     "C:\\Users\\Carlos Eduardo\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\6.0.20\\microsoft.aspnetcore.cryptography.internal.6.0.20.nupkg.sha512",
     "C:\\Users\\Carlos Eduardo\\.nuget\\packages\\microsoft.aspnetcore.cryptography.keyderivation\\6.0.20\\microsoft.aspnetcore.cryptography.keyderivation.6.0.20.nupkg.sha512",
     "C:\\Users\\Carlos Eduardo\\.nuget\\packages\\microsoft.aspnetcore.identity.entityframeworkcore\\6.0.20\\microsoft.aspnetcore.identity.entityframeworkcore.6.0.20.nupkg.sha512",
+    "C:\\Users\\Carlos Eduardo\\.nuget\\packages\\microsoft.aspnetcore.mvc.versioning\\5.1.0\\microsoft.aspnetcore.mvc.versioning.5.1.0.nupkg.sha512",
     "C:\\Users\\Carlos Eduardo\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
     "C:\\Users\\Carlos Eduardo\\.nuget\\packages\\microsoft.entityframeworkcore\\6.0.20\\microsoft.entityframeworkcore.6.0.20.nupkg.sha512",
     "C:\\Users\\Carlos Eduardo\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\6.0.20\\microsoft.entityframeworkcore.abstractions.6.0.20.nupkg.sha512",
